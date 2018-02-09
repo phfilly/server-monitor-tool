@@ -1,0 +1,5 @@
+Flask==0.12.2
+paramiko==2.4.0
+keyring==11.0.0
+paramiko-expect==0.2.8
+boto3==1.5.16

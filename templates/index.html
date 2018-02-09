@@ -1,0 +1,13 @@
+{% extends "top.html" %}
+{% block content %}
+    <div class='container'>
+        <div class='row'><h1>Server Health</h1></div>
+          <form action = "http://127.0.0.1:5000/read" method = "POST">
+            <!--<div class="form-group">
+              <label for="exampleInputPassword1">Google Auth OTP</label>
+              <input type="number" class="form-control" placeholder="OTP" name='OTP'>
+            </div>-->
+            <button type="submit" class="btn btn-primary">Start</button>
+          </form>
+    </div>
+{% endblock %}
