@@ -11,17 +11,18 @@ def login():
 
 
 @app.route('/memory', methods=['POST', 'GET'])
-def read():
-    server_data = []
-    if request.method == 'POST':
-        server_data.append(server.connectBastion())
-        return render_template('read.html', data=server_data)
-    else:
-        return render_template('index.html')
+def memory():
+    '''
+        ADD SERVERS HERE FOR MEMORY STATS
+    '''
+    data = []
+    data.append(aws.memory('The Pitt', env.THEPITT_IMAGE_ID))
+
+    return render_template('aws.html', data=data)
 
 
 @app.route('/cpu')
-def metrics():
+def cpu():
     '''
         ADD SERVERS HERE FOR CPU STATS
     '''

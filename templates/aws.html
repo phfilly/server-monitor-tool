@@ -15,9 +15,23 @@
                                     {{ server['Datapoints'][0]['Timestamp'].strftime('%Y-%m-%d %H:%M:%S') }}
                                 </small>
                                 <p class="card-text">
-                                    <div class="alert alert-success" role="alert">
-                                        {{ server['Datapoints'][0]['Average'] }}%
-                                    </div>
+                                    {% if server['Datapoints'][0]['Average'] > 80 %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ server['Datapoints'][0]['Average'] }}
+                                        </div>
+                                    {% elif server['Datapoints'][0]['Average'] > 50 %}
+                                        <div class="alert alert-warning" role="alert">
+                                             {{ server['Datapoints'][0]['Average'] }}
+                                        </div>
+                                    {% elif server['Datapoints'][0]['Average'] > 20 %}
+                                        <div class="alert alert-info" role="alert">
+                                             {{ server['Datapoints'][0]['Average'] }}
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-success" role="alert">
+                                             {{ server['Datapoints'][0]['Average'] }}%
+                                        </div>
+                                    {% endif %}
                                 </p>
                                 <!--<p>{{ server['Datapoints'] }}</p>-->
                             </div>
