@@ -17,6 +17,8 @@ def memory():
     '''
     data = []
     data.append(aws.memory('The Pitt', env.THEPITT_IMAGE_ID))
+    data.append(aws.memory('The Tower', env.THETOWER_IMAGE_ID))
+    data.append(aws.memory('The Portal', env.THEPORTAL_IMAGE_ID))
 
     return render_template('aws.html', data=data)
 
