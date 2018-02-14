@@ -1,13 +1,7 @@
-import server
 import aws
 import env
-from flask import Flask, render_template, request
+from flask import Flask, render_template
 app = Flask(__name__)
-
-
-@app.route('/')
-def login():
-    return render_template('index.html')
 
 
 @app.route('/memory', methods=['POST', 'GET'])
@@ -38,4 +32,4 @@ def cpu():
 
 
 if __name__ == '__main__':
-    login()
+    app.run(debug=True, host='0.0.0.0', port=7000)
