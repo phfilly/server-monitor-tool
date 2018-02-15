@@ -28,6 +28,7 @@ def cpu():
     data.append(aws.metrics('The Tower', env.THETOWER_ID))
     data.append(aws.metrics('The Portal', env.THEPORTAL_ID))
     data.append(aws.metrics('Reporting', env.REPORTING_ID))
+    data.append(aws.databaseMemory('MySQL', env.MYSQLDB))
     return render_template('aws.html', data=data)
 
 
