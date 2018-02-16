@@ -1,10 +1,10 @@
 {% extends "top.html" %}
 {% block content %}
-    <div class='container'>
+    <div class='container' style='padding: 0px;'>
         <div class='row'><h1>AWS Server Health</h1></div>
             <div class='row'>
                 {% for server, graph in data %}
-                    <div class='col-md-6'>
+                    <div class='col-md-6' style='margin:3px 0px'>
                         <div class="card" style='padding: 20px;'>
                             <div class="card-block">
                                 <h4 class="card-title">{{ server['InstanceName'] }}</h4>
@@ -12,24 +12,24 @@
                                     {{ server['Label'] }}
                                 </h6>
                                 <small>
-                                    {{ server['Datapoints'][0]['Timestamp'].strftime('%Y-%m-%d %H:%M:%S') }}
+                                    {{ graph[-1][0] }}
                                 </small>
                                 <p class="card-text">
                                     {% if server['Datapoints'][0]['Average'] > 80 %}
                                         <div class="alert alert-danger" role="alert">
-                                            {{ server['Datapoints'][0]['Average']|round(2) }}
+                                           Avg. {{ server['Datapoints'][0]['Average']|round(2) }}%
                                         </div>
                                     {% elif server['Datapoints'][0]['Average'] > 50 %}
                                         <div class="alert alert-warning" role="alert">
-                                                {{ server['Datapoints'][0]['Average']|round(2) }}
+                                            Avg. {{ server['Datapoints'][0]['Average']|round(2) }}%
                                         </div>
                                     {% elif server['Datapoints'][0]['Average'] > 20 %}
                                         <div class="alert alert-info" role="alert">
-                                                {{ server['Datapoints'][0]['Average']|round(2) }}
+                                            Avg. {{ server['Datapoints'][0]['Average']|round(2) }}%
                                         </div>
                                     {% else %}
                                         <div class="alert alert-success" role="alert">
-                                                {{ server['Datapoints'][0]['Average']|round(2) }}%
+                                            Avg. {{ server['Datapoints'][0]['Average']|round(2) }}%
                                         </div>
                                     {% endif %}
                                 </p>
@@ -39,11 +39,11 @@
                     </div>
                     <script>
                         var ctx = document.getElementById("graph_{{ server['InstanceName'] }}");
-                        var labels = [{% for date in graph[0] %}
-                              "{{date.strftime('%Y-%m-%d %H:%M:%S')}}",
+                        var labels = [{% for date in graph %}
+                              "{{date[0]}}",
                               {% endfor %}];
-                        var values = [{% for value in graph[1] %}
-                                    {{value}},
+                        var values = [{% for value in graph %}
+                                    {{value[1]}},
                                     {% endfor %}];
                         console.log(labels, values);
                         new Chart(ctx, {
@@ -54,7 +54,7 @@
                                 {
                                     label: '{{ server['Label'] }}',
                                     data: values,
-                                    borderColor: "#3e95cd",
+                                    borderColor: "#ff5825",
                                 }
                               ]
                             }

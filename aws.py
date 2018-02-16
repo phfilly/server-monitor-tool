@@ -4,10 +4,11 @@ import datetime
 
 
 def metrics(name, instanceID):
-    cw = boto3.client('cloudwatch', region_name='eu-west-1')
+    cw = boto3.client('cloudwatch',
+                      region_name='eu-west-1')
     view = cw.get_metric_statistics(
-        Period=300,
-        StartTime=datetime.datetime.utcnow() - datetime.timedelta(seconds=1200),
+        Period=60,
+        StartTime=datetime.datetime.utcnow() - datetime.timedelta(seconds=3600),
         EndTime=datetime.datetime.utcnow(),
         MetricName='CPUUtilization',
         Namespace='AWS/EC2',
@@ -15,20 +16,16 @@ def metrics(name, instanceID):
         Dimensions=[{'Name': 'InstanceId', 'Value': instanceID}]
     )
     view['InstanceName'] = name
-    dates = []
-    values = []
-    for points in view['Datapoints']:
-        dates.append(points['Timestamp'])
-        values.append(points['Average'])
-
-    return [view, [dates, values]]
+    data = graphData(view)
+    return [view, data]
 
 
 def memory(name, imageID):
-    cw = boto3.client('cloudwatch', region_name='eu-west-1')
+    cw = boto3.client('cloudwatch',
+                      region_name='eu-west-1')
     view = cw.get_metric_statistics(
-        Period=300,
-        StartTime=datetime.datetime.utcnow() - datetime.timedelta(seconds=1200),
+        Period=60,
+        StartTime=datetime.datetime.utcnow() - datetime.timedelta(seconds=3600),
         EndTime=datetime.datetime.utcnow(),
         MetricName='MemoryUtilization',
         Namespace='System/Linux',
@@ -36,20 +33,16 @@ def memory(name, imageID):
         Dimensions=[{'Name': 'ImageId', 'Value': imageID}]
     )
     view['InstanceName'] = name
-    dates = []
-    values = []
-    for points in view['Datapoints']:
-        dates.append(points['Timestamp'])
-        values.append(points['Average'])
-
-    return [view, [dates, values]]
+    data = graphData(view)
+    return [view, data]
 
 
 def databaseMemory(name, db):
-    cw = boto3.client('cloudwatch', region_name='eu-west-1')
+    cw = boto3.client('cloudwatch',
+                      region_name='eu-west-1')
     view = cw.get_metric_statistics(
-        Period=300,
-        StartTime=datetime.datetime.utcnow() - datetime.timedelta(seconds=1200),
+        Period=60,
+        StartTime=datetime.datetime.utcnow() - datetime.timedelta(seconds=3600),
         EndTime=datetime.datetime.utcnow(),
         MetricName='CPUUtilization',
         Namespace='AWS/RDS',
@@ -58,10 +51,14 @@ def databaseMemory(name, db):
     )
 
     view['InstanceName'] = name
-    dates = []
-    values = []
-    for points in view['Datapoints']:
-        dates.append(points['Timestamp'])
-        values.append(points['Average'])
+    data = graphData(view)
+    return [view, data]
 
-    return [view, [dates, values]]
+
+def graphData(view):
+    data = []
+    for points in view['Datapoints']:
+        data.append([points['Timestamp'].strftime('%Y-%m-%d %H:%M:%S'), points['Average']])
+
+    data = sorted(data, key=lambda x: x[0])
+    return data
