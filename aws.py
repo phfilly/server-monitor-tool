@@ -3,7 +3,7 @@ from boto3.session import Session
 import datetime
 
 
-def metrics(name, instanceID):
+def cpu(name, instanceID, instanceType):
     cw = boto3.client('cloudwatch',
                       region_name='eu-west-1')
     view = cw.get_metric_statistics(
@@ -16,11 +16,12 @@ def metrics(name, instanceID):
         Dimensions=[{'Name': 'InstanceId', 'Value': instanceID}]
     )
     view['InstanceName'] = name
+    view['InstanceType'] = instanceType
     data = graphData(view)
     return [view, data]
 
 
-def memory(name, imageID):
+def memory(name, imageID, instanceType):
     cw = boto3.client('cloudwatch',
                       region_name='eu-west-1')
     view = cw.get_metric_statistics(
@@ -33,11 +34,12 @@ def memory(name, imageID):
         Dimensions=[{'Name': 'ImageId', 'Value': imageID}]
     )
     view['InstanceName'] = name
+    view['InstanceType'] = instanceType
     data = graphData(view)
     return [view, data]
 
 
-def databaseMemory(name, db):
+def databaseMemory(name, db, instanceType):
     cw = boto3.client('cloudwatch',
                       region_name='eu-west-1')
     view = cw.get_metric_statistics(
@@ -51,6 +53,26 @@ def databaseMemory(name, db):
     )
 
     view['InstanceName'] = name
+    view['InstanceType'] = instanceType
+    data = graphData(view)
+    return [view, data]
+
+
+def redshift(name, db, instanceType):
+    cw = boto3.client('cloudwatch',
+                      region_name='eu-west-1')
+    view = cw.get_metric_statistics(
+        Period=60,
+        StartTime=datetime.datetime.utcnow() - datetime.timedelta(seconds=3600),
+        EndTime=datetime.datetime.utcnow(),
+        MetricName='CPUUtilization',
+        Namespace='AWS/Redshift',
+        Statistics=['Average'],
+        Dimensions=[{'Name': 'ClusterIdentifier',
+                     'Value': db}, {'Name': 'NodeID', 'Value': 'Leader'}]
+    )
+    view['InstanceName'] = name
+    view['InstanceType'] = instanceType
     data = graphData(view)
     return [view, data]
 

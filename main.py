@@ -10,9 +10,11 @@ def memory():
         ADD SERVERS HERE FOR MEMORY STATS
     '''
     data = []
-    data.append(aws.memory('The Pitt', env.THEPITT_IMAGE_ID))
-    data.append(aws.memory('The Tower', env.THETOWER_IMAGE_ID))
-    data.append(aws.memory('The Portal', env.THEPORTAL_IMAGE_ID))
+    data.append(aws.memory('The Pitt', env.THEPITT_IMAGE_ID, 'c4.4xlarge'))
+    data.append(aws.memory('The Tower', env.THETOWER_IMAGE_ID, 't2.large'))
+    data.append(aws.memory('The Portal', env.THEPORTAL_IMAGE_ID, 't2.large'))
+    data.append(aws.memory('Jade', env.JADE_IMAGE_ID, 'm4.xlarge'))
+    data.append(aws.memory('Kitana', env.KITANA_IMAGE_ID, 'm4.xlarge'))
 
     return render_template('aws.html', data=data, pagename='/memory')
 
@@ -24,11 +26,14 @@ def cpu():
     '''
 
     data = []
-    data.append(aws.metrics('The Pitt', env.THEPITT_ID))
-    data.append(aws.metrics('The Tower', env.THETOWER_ID))
-    data.append(aws.metrics('The Portal', env.THEPORTAL_ID))
-    data.append(aws.metrics('Reporting', env.REPORTING_ID))
-    data.append(aws.databaseMemory('MySQL', env.MYSQLDB))
+    data.append(aws.cpu('The Pitt', env.THEPITT_ID, 'c4.4xlarge'))
+    data.append(aws.cpu('The Tower', env.THETOWER_ID, 't2.large'))
+    data.append(aws.cpu('The Portal', env.THEPORTAL_ID, 't2.large'))
+    data.append(aws.cpu('Reporting', env.REPORTING_ID, 'm5.large'))
+    data.append(aws.cpu('Kitana(OrientDB)', env.KITANA_ID, 'm4.xlarge'))
+    data.append(aws.cpu('Jade(OrientDB)', env.JADE_ID, 'm4.xlarge'))
+    data.append(aws.databaseMemory('MySQL', env.MYSQLDB, 'db.m3.xlarge'))
+    data.append(aws.redshift('Redshift', env.REDSHIFT, 'dc2.large'))
     return render_template('aws.html', data=data, pagename='/cpu')
 
 

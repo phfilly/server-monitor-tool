@@ -9,7 +9,7 @@
         </div>
             <div class='row'>
                 {% for server, graph in data %}
-                    <div class='col-md-6' style='margin:3px 0px'>
+                    <div class='col-md-6' style='margin:15px 0px'>
                         <div class="card" style='padding: 20px;'>
                             <div class="card-block">
                                 <h4 class="card-title">{{ server['InstanceName'] }}</h4>
@@ -17,7 +17,7 @@
                                     {{ server['Label'] }}
                                 </h6>
                                 <small>
-                                    {{ graph[-1][0] }}
+                                    {{ graph[-1][0] }} - <i>{{ server['InstanceType'] }}</i>
                                 </small>
                                 <p class="card-text">
                                     {% if server['Datapoints'][0]['Average'] > 80 %}
