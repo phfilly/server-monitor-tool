@@ -40,8 +40,21 @@ def pipeline():
     data = aws.dataPipeline(env.DATAPIPELINE_ID)
     return render_template('logs.html',
                            data=data,
+                           tablename='Pipeline Logs',
                            pagename='/datapipeline',
                            pipelineURL=env.PIPELINEURL)
+
+
+@app.route('/scrapers')
+def scrapers():
+    '''
+        VIEW DOCKER CONTAINER STATUS
+    '''
+    data = ['Coming Soon']
+    return render_template('logs.html',
+                           data=data,
+                           tablename='Docker Scrapers',
+                           pagename='/scrapers')
 
 
 if __name__ == '__main__':

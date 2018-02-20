@@ -10,11 +10,6 @@
     </head>
     <body>
         <div style='width: 100%; background-color: #ff5825; margin-bottom: 15px;'>
-            <style>
-                .nav-icons {
-                    width: 20px;
-                }    
-            </style>
             <div class='container'>
                 <div class='row'>
                     <div class='col-lg-12'>
@@ -32,6 +27,11 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="/datapipeline">
                                     <img src="{{ url_for('static', filename='css/svg/si-glyph-database-share.svg') }}" class='nav-icons'> DATA PIPELINE
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/scrapers">
+                                    <img src="{{ url_for('static', filename='css/svg/si-glyph-fish.svg') }}" class='nav-icons'> DOCKER SCRAPERS
                                 </a>
                             </li>
                         </ul>
