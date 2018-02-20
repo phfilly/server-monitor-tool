@@ -1,0 +1,49 @@
+{% extends "top.html" %}
+{% block content %}
+    <div class='container' style='padding: 0px;'>
+        <div class='row'>
+            <h1>Logs</h1>
+            <a class="nav-link" href="{{ pagename }}">
+                <img src="{{ url_for('static', filename='css/svg/si-glyph-arrow-circle-rycycle.svg') }}" class='refresh nav-icons' title='refresh data'>
+            </a>
+        </div>
+            <div class='row'>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Last Checked</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for logs in data['pipelineDescriptionList'] %}
+                            <tr>
+                                <td>
+                                    {{ loop.index }}.
+                                </td>
+                                <td>
+                                    <a href='{{ pipelineURL }}' title='view pipeline' target='_blank'>
+                                        {{ logs['name'] }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {% for key in logs['fields'] %}
+                                        {{ key['stringValue'] if key['key'] == '@healthStatus' }}
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for key in logs['fields'] %}
+                                        <p>{{ 'Next Run: {}'.format(key['stringValue']) if key['key'] == '@nextRunTime' }}</p>
+                                        <p>{{ 'Last Run: {}'.format(key['stringValue']) if key['key'] == '@latestRunTime' }}</p>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -62,3 +62,10 @@ def graphData(view):
 
     data = sorted(data, key=lambda x: x[0])
     return data
+
+
+def dataPipeline(pipelineID):
+    cw = boto3.client('datapipeline',
+                      region_name='eu-west-1')
+    response = cw.describe_pipelines(pipelineIds=[pipelineID])
+    return response

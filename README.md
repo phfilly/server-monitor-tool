@@ -1,5 +1,13 @@
 # AWS Cloudwatch Server Monitor
 
+# Set up
+
+```
+$ python3.6 -m venv .env
+$ source .env/bin/activate
+$ pip install -r requirements.txt
+```
+
 # To run a docker image
 
 ```
