@@ -1,8 +1,8 @@
 {% extends "top.html" %}
 {% block content %}
-    <div class='container' style='padding: 0px;'>
+    <div class='container'>
         <div class='row'>
-            <h1>AWS Server Health</h1>
+            <h2>AWS Server Health</h2>
             <a class="nav-link" href="{{ pagename }}">
                 <img src="{{ url_for('static', filename='css/svg/si-glyph-arrow-circle-rycycle.svg') }}" class='refresh nav-icons' title='refresh data'>
             </a>
@@ -13,32 +13,37 @@
                         <div class="card" style='padding: 20px;'>
                             <div class="card-block">
                                 <h4 class="card-title">{{ server['InstanceName'] }}</h4>
-                                <h6 class="card-subtitle mb-2 text-muted">
-                                    {{ server['Label'] }}
-                                </h6>
-                                <small>
-                                    {{ graph[-1][0] }} - <i>{{ server['InstanceType'] }}</i>
-                                </small>
-                                <p class="card-text">
-                                    {% if server['Datapoints'][0]['Average'] > 80 %}
-                                        <div class="alert alert-danger" role="alert">
-                                           Avg. {{ server['Datapoints'][0]['Average']|round(2) }}%
-                                        </div>
-                                    {% elif server['Datapoints'][0]['Average'] > 50 %}
-                                        <div class="alert alert-warning" role="alert">
+
+                                {% if graph is defined and graph|length > 0 %}
+                                    <h6 class="card-subtitle mb-2 text-muted">
+                                        {{ server['Label'] }}
+                                    </h6>
+                                    <small>
+                                        {{ graph[-1][0] }} - <i>{{ server['InstanceType'] }}</i>
+                                    </small>
+                                    <p class="card-text">
+                                        {% if server['Datapoints'][0]['Average'] > 80 %}
+                                            <div class="alert alert-danger" role="alert">
                                             Avg. {{ server['Datapoints'][0]['Average']|round(2) }}%
-                                        </div>
-                                    {% elif server['Datapoints'][0]['Average'] > 20 %}
-                                        <div class="alert alert-info" role="alert">
-                                            Avg. {{ server['Datapoints'][0]['Average']|round(2) }}%
-                                        </div>
-                                    {% else %}
-                                        <div class="alert alert-success" role="alert">
-                                            Avg. {{ server['Datapoints'][0]['Average']|round(2) }}%
-                                        </div>
-                                    {% endif %}
-                                </p>
-                                <canvas id="graph_{{ server['InstanceName'] }}"></canvas>
+                                            </div>
+                                        {% elif server['Datapoints'][0]['Average'] > 50 %}
+                                            <div class="alert alert-warning" role="alert">
+                                                Avg. {{ server['Datapoints'][0]['Average']|round(2) }}%
+                                            </div>
+                                        {% elif server['Datapoints'][0]['Average'] > 20 %}
+                                            <div class="alert alert-info" role="alert">
+                                                Avg. {{ server['Datapoints'][0]['Average']|round(2) }}%
+                                            </div>
+                                        {% else %}
+                                            <div class="alert alert-success" role="alert">
+                                                Avg. {{ server['Datapoints'][0]['Average']|round(2) }}%
+                                            </div>
+                                        {% endif %}
+                                    </p>
+                                    <canvas id="graph_{{ server['InstanceName'] }}"></canvas>
+                                {% else %}
+                                    <p>No data.</p>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

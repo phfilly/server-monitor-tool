@@ -1,0 +1,58 @@
+{% extends "top.html" %}
+{% block content %}
+    <div class='container'>
+        <div class='row'>
+            <h2>{{ tablename }}</h2>
+            <a class="nav-link" href="{{ pagename }}">
+                <img src="{{ url_for('static', filename='css/svg/si-glyph-arrow-circle-rycycle.svg') }}" class='refresh nav-icons' title='refresh data'>
+            </a>
+        </div>
+            <div class='row'>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Server</th>
+                            <th scope="col">Timestamp</th>
+                            <th scope="col">Mem. Usage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for scraper in data %}
+                                <tr>
+                                    <td>
+                                        {{ loop.index }}.
+                                    </td>
+                                    <td>
+                                        {{ scraper[0] }}
+                                    </td>
+                                    <td>
+                                        {{ scraper[1] }}
+                                    </td>
+                                    <td>
+                                        <i>{{ scraper[2] }}</i>
+                                    </td>
+                                    <td>
+                                        <small>
+                                            {{ scraper[-1] }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <i>{{ scraper[-1] }} MiB</i>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    
+    <div class='footer'>
+        Continuon Monitor Tool
+    </div>
+    
+    {% endblock %}
+    

@@ -55,8 +55,8 @@ def scrapers():
     '''
         VIEW DOCKER CONTAINER STATUS
     '''
-    data = ['Coming Soon']
-    return render_template('logs.html',
+    data = aws.read_logs()
+    return render_template('scrapers.html',
                            data=data,
                            tablename='Docker Scrapers',
                            pagename='/scrapers')

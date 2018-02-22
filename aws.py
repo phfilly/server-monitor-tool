@@ -1,11 +1,13 @@
 import boto3
-from boto3.session import Session
 import datetime
+import env
 
 
 def cpu(name, instanceID, instanceType):
     cw = boto3.client('cloudwatch',
-                      region_name='eu-west-1')
+                      region_name='eu-west-1',
+                      aws_access_key_id=env.AWS_ACCESS_KEY_ID,
+                      aws_secret_access_key=env.AWS_SECRET_ACCESS_KEY)
     view = cw.get_metric_statistics(
         Period=60,
         StartTime=datetime.datetime.utcnow() - datetime.timedelta(seconds=3600),
@@ -23,7 +25,9 @@ def cpu(name, instanceID, instanceType):
 
 def memory(name, imageID, instanceType):
     cw = boto3.client('cloudwatch',
-                      region_name='eu-west-1')
+                      region_name='eu-west-1',
+                      aws_access_key_id=env.AWS_ACCESS_KEY_ID,
+                      aws_secret_access_key=env.AWS_SECRET_ACCESS_KEY)
     view = cw.get_metric_statistics(
         Period=60,
         StartTime=datetime.datetime.utcnow() - datetime.timedelta(seconds=3600),
@@ -41,7 +45,9 @@ def memory(name, imageID, instanceType):
 
 def databaseMemory(name, db, instanceType):
     cw = boto3.client('cloudwatch',
-                      region_name='eu-west-1')
+                      region_name='eu-west-1',
+                      aws_access_key_id=env.AWS_ACCESS_KEY_ID,
+                      aws_secret_access_key=env.AWS_SECRET_ACCESS_KEY)
     view = cw.get_metric_statistics(
         Period=60,
         StartTime=datetime.datetime.utcnow() - datetime.timedelta(seconds=3600),
@@ -60,7 +66,9 @@ def databaseMemory(name, db, instanceType):
 
 def redshift(name, db, instanceType):
     cw = boto3.client('cloudwatch',
-                      region_name='eu-west-1')
+                      region_name='eu-west-1',
+                      aws_access_key_id=env.AWS_ACCESS_KEY_ID,
+                      aws_secret_access_key=env.AWS_SECRET_ACCESS_KEY)
     view = cw.get_metric_statistics(
         Period=60,
         StartTime=datetime.datetime.utcnow() - datetime.timedelta(seconds=3600),
@@ -87,7 +95,32 @@ def graphData(view):
 
 
 def dataPipeline(pipelineID):
-    cw = boto3.client('datapipeline',
-                      region_name='eu-west-1')
-    response = cw.describe_pipelines(pipelineIds=[pipelineID])
+    try:
+        cw = boto3.client('datapipeline',
+                          region_name='eu-west-1',
+                          aws_access_key_id=env.AWS_ACCESS_KEY_ID,
+                          aws_secret_access_key=env.AWS_SECRET_ACCESS_KEY)
+        response = cw.describe_pipelines(pipelineIds=[pipelineID])
+    except Exception as e:
+        response = {'pipelineDescriptionList': [{'name': 'Something went wrong /"-.-"\ '}]}
+
     return response
+
+
+def read_logs():
+    client = boto3.client('logs',
+                          region_name='eu-west-1',
+                          aws_access_key_id=env.AWS_ACCESS_KEY_ID,
+                          aws_secret_access_key=env.AWS_SECRET_ACCESS_KEY)
+
+    group_name = 'docker-container-status'
+    stream = 'Localhost'
+    data = []
+    logs_batch = client.get_log_events(logGroupName=group_name, logStreamName=stream)
+    for event in logs_batch['events']:
+        tmp = event['message'][1:-1].split(',')
+        char = [char.replace('"', '') for char in tmp]
+        char.append(event['timestamp'])
+        data.append(char)
+
+    return data
