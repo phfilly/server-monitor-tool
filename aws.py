@@ -1,6 +1,8 @@
 import boto3
 import datetime
 import env
+import time
+from datetime import date, timedelta
 
 
 def cpu(name, instanceID, instanceType):
@@ -88,7 +90,7 @@ def redshift(name, db, instanceType):
 def graphData(view):
     data = []
     for points in view['Datapoints']:
-        data.append([points['Timestamp'].strftime('%Y-%m-%d %H:%M:%S'), points['Average']])
+        data.append([points['Timestamp'].strftime('%Y-%m-%d %H:%M:%S'), points['Average'] if 'Average' in points else points['Sum']])
 
     data = sorted(data, key=lambda x: x[0])
     return data
@@ -100,8 +102,14 @@ def dataPipeline(pipelineID):
                           region_name='eu-west-1',
                           aws_access_key_id=env.AWS_ACCESS_KEY_ID,
                           aws_secret_access_key=env.AWS_SECRET_ACCESS_KEY)
-        response = cw.describe_pipelines(pipelineIds=[pipelineID])
+        pipelines = cw.list_pipelines()
+        pipe_data = []
+        for pipeline in pipelines['pipelineIdList']:
+            pipe_data.append(pipeline['id'])
+
+        response = cw.describe_pipelines(pipelineIds=pipe_data)
     except Exception as e:
+        print('Pipeline Error', e)
         response = {'pipelineDescriptionList': [{'name': 'Something went wrong /"-.-"\ '}]}
 
     return response
@@ -114,13 +122,48 @@ def read_logs():
                           aws_secret_access_key=env.AWS_SECRET_ACCESS_KEY)
 
     group_name = 'docker-container-status'
-    stream = 'Localhost'
-    data = []
+    stream = 'Scrapers'
+    result = {}
     logs_batch = client.get_log_events(logGroupName=group_name, logStreamName=stream)
+
     for event in logs_batch['events']:
         tmp = event['message'][1:-1].split(',')
         char = [char.replace('"', '') for char in tmp]
         char.append(event['timestamp'])
-        data.append(char)
 
-    return data
+        """ THIS NEEDS TO BE CLEANED UP """
+
+        if char[0] not in result:
+            result.update({char[0]: [{'name': char[0],
+                                      'status': char[1],
+                                      'server': char[2],
+                                      'ram': char[3],
+                                      'time': time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(char[-1]/1000.0))}]})
+        else:
+            result[char[0]][0]['status'] = char[1]
+            result[char[0]][0]['server'] = char[2]
+            result[char[0]][0]['ram'] = char[3]
+            result[char[0]][0]['time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(char[-1]/1000.0))
+
+    return result
+
+
+def retrieve_scraper_data(scraper):
+    cw = boto3.client('cloudwatch',
+                      region_name='eu-west-1',
+                      aws_access_key_id=env.AWS_ACCESS_KEY_ID,
+                      aws_secret_access_key=env.AWS_SECRET_ACCESS_KEY)
+    tmp = datetime.datetime.utcnow()-timedelta(days=1)
+    view = cw.get_metric_statistics(
+        Period=3600,
+        StartTime=tmp.strftime('%Y-%m-%d %H:%M:%S'),
+        EndTime=datetime.datetime.utcnow(),
+        MetricName='ScraperStatus',
+        Namespace='DockerScrapers',
+        Statistics=['Sum'],
+        Dimensions=[{'Name': 'Scraper', 'Value': scraper}]
+    )
+    view['InstanceName'] = scraper
+    view['InstanceType'] = ''
+    data = graphData(view)
+    return [view, data]
