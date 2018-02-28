@@ -46,8 +46,7 @@ def pipeline():
     return render_template('logs.html',
                            data=data,
                            tablename='Pipeline Logs',
-                           pagename='/datapipeline',
-                           pipelineURL=env.PIPELINEURL)
+                           pagename='/datapipeline')
 
 
 @app.route('/scrapers')
@@ -60,6 +59,19 @@ def scrapers():
                            data=data,
                            tablename='Docker Scrapers',
                            pagename='/scrapers')
+
+
+@app.route('/scraper-graph/<scraper>')
+def scraper_graph(scraper):
+    '''
+        VIEW TIME DATA OF A SCRAPER
+    '''
+    data = aws.retrieve_scraper_data(scraper)
+    print(data)
+    return render_template('scraper-graph.html',
+                           data=data,
+                           tablename='Docker Scraper Perfomance',
+                           pagename='/scraper-graph')
 
 
 if __name__ == '__main__':
