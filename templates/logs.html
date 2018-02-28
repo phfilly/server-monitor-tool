@@ -14,6 +14,7 @@
                         <th scope="col">#</th>
                         <th scope="col">Name</th>
                         <th scope="col">Status</th>
+                        <th scope="col">Scheduled State</th>
                         <th scope="col">Last Checked</th>
                         </tr>
                     </thead>
@@ -24,13 +25,18 @@
                                     {{ loop.index }}.
                                 </td>
                                 <td>
-                                    <a href='{{ pipelineURL }}' title='view pipeline' target='_blank'>
+                                    <a href='https://console.aws.amazon.com/datapipeline/home?region=eu-west-1#ExecutionDetailsPlace:pipelineId={{ logs['pipelineId'] }}&show=latest' title='view pipeline' target='_blank'>
                                         {{ logs['name'] }}
                                     </a>
                                 </td>
                                 <td>
                                     {% for key in logs['fields'] %}
                                         {{ key['stringValue'] if key['key'] == '@healthStatus' }}
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for key in logs['fields'] %}
+                                        <small>{{ key['stringValue'] if key['key'] == '@pipelineState' }}</small>
                                     {% endfor %}
                                 </td>
                                 <td>
