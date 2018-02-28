@@ -17,30 +17,40 @@
                             <th scope="col">Server</th>
                             <th scope="col">Timestamp</th>
                             <th scope="col">Mem. Usage</th>
+                            <th scope="col"></th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for scraper in data %}
+                            {% for key, scraper in data.items() %}
                                 <tr>
                                     <td>
                                         {{ loop.index }}.
                                     </td>
                                     <td>
-                                        {{ scraper[0] }}
+                                        <small>{{ scraper[0]['name'] }}</small>
                                     </td>
                                     <td>
-                                        {{ scraper[1] }}
+                                        {% if 'Up' in scraper[0]['status'] %}
+                                            <span style='color:green; font-size: 80%;'>{{ scraper[0]['status'] }}</span>
+                                        {% else %}
+                                            <span style='color:red; font-size: 80%;'>{{ scraper[0]['status'] }}</span>
+                                        {% endif %}
                                     </td>
                                     <td>
-                                        <i>{{ scraper[2] }}</i>
+                                        <small>{{ scraper[0]['server'] }}</small>
                                     </td>
                                     <td>
                                         <small>
-                                            {{ scraper[-1] }}
+                                            {{ scraper[0]['time'] }}
                                         </small>
                                     </td>
                                     <td>
-                                        <i>{{ scraper[-1] }} MiB</i>
+                                        <small>{{ scraper[0]['ram'] }} MiB</small>
+                                    </td>
+                                    <td>
+                                        <a href='/scraper-graph/{{ scraper[0]['name'] }}' title='Click to view'>
+                                            <img src="{{ url_for('static', filename='css/svg/si-glyph-chart-decrease.svg') }}" class='nav-icons'/>
+                                        </a>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -49,10 +59,6 @@
                 </div>
             </div>
         </div>
-    
-    <div class='footer'>
-        Continuon Monitor Tool
-    </div>
     
     {% endblock %}
     
