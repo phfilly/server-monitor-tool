@@ -2,7 +2,8 @@ import boto3
 import datetime
 import env
 import time
-from datetime import date, timedelta
+from datetime import timedelta
+from functools import reduce
 
 
 def cpu(name, instanceID, instanceType):
@@ -90,10 +91,14 @@ def redshift(name, db, instanceType):
 def graphData(view):
     data = []
     for points in view['Datapoints']:
-        data.append([points['Timestamp'].strftime('%Y-%m-%d %H:%M:%S'), points['Average'] if 'Average' in points else points['Sum']])
+        data.append([points['Timestamp'].strftime('%Y-%m-%d %H:%M:%S'),
+                     points['Average'] if 'Average' in points else points['Sum']
+                     ])
+
+    average = reduce(lambda x, y: x + y, (avg[1] for avg in data))/len(data)
 
     data = sorted(data, key=lambda x: x[0])
-    return data
+    return [data, average]
 
 
 def dataPipeline(pipelineID):

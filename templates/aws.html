@@ -19,24 +19,24 @@
                                         {{ server['Label'] }}
                                     </h6>
                                     <small>
-                                        {{ graph[-1][0] }} - <i>{{ server['InstanceType'] }}</i>
+                                        Last pulse: {{ graph[0][-1][0] }} - <i>{{ server['InstanceType'] }}</i>
                                     </small>
                                     <p class="card-text">
-                                        {% if server['Datapoints'][0]['Average'] > 80 %}
+                                        {% if graph[1] > 80 %}
                                             <div class="alert alert-danger" role="alert">
-                                            Avg. {{ server['Datapoints'][0]['Average']|round(2) }}%
+                                            Avg. {{ graph[1]|round(2) }}%
                                             </div>
-                                        {% elif server['Datapoints'][0]['Average'] > 50 %}
+                                        {% elif graph[1] > 50 %}
                                             <div class="alert alert-warning" role="alert">
-                                                Avg. {{ server['Datapoints'][0]['Average']|round(2) }}%
+                                                Avg. {{ graph[1]|round(2) }}%
                                             </div>
-                                        {% elif server['Datapoints'][0]['Average'] > 20 %}
+                                        {% elif graph[1] > 20 %}
                                             <div class="alert alert-info" role="alert">
-                                                Avg. {{ server['Datapoints'][0]['Average']|round(2) }}%
+                                                Avg. {{ graph[1]|round(2) }}%
                                             </div>
                                         {% else %}
                                             <div class="alert alert-success" role="alert">
-                                                Avg. {{ server['Datapoints'][0]['Average']|round(2) }}%
+                                                Avg. {{ graph[1]|round(2) }}%
                                             </div>
                                         {% endif %}
                                     </p>
@@ -49,10 +49,10 @@
                     </div>
                     <script>
                         var ctx = document.getElementById("graph_{{ server['InstanceName'] }}");
-                        var labels = [{% for date in graph %}
+                        var labels = [{% for date in graph[0] %}
                               "{{date[0]}}",
                               {% endfor %}];
-                        var values = [{% for value in graph %}
+                        var values = [{% for value in graph[0] %}
                                     {{value[1]}},
                                     {% endfor %}];
                         console.log(labels, values);

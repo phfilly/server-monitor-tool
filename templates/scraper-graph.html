@@ -1,0 +1,73 @@
+{% extends "top.html" %}
+{% block content %}
+    <div class='container'>
+        <div class='row'>
+            <h2>AWS Server Health</h2>
+            <a class="nav-link" href="{{ pagename }}">
+                <img src="{{ url_for('static', filename='css/svg/si-glyph-arrow-circle-rycycle.svg') }}" class='refresh nav-icons' title='refresh data'>
+            </a>
+        </div>
+            <div class='row'>
+                <div class='col-md-6' style='margin:15px 0px'>
+                    <div class="card" style='padding: 20px;'>
+                        <div class="card-block">
+                            <h4 class="card-title">{{ data[0]['InstanceName'] }}</h4>
+
+                            {% if data[0] is defined and data[0]|length > 0 %}
+                                <h6 class="card-subtitle mb-2 text-muted">
+                                    {{ data[0]['Label'] }}
+                                </h6>
+                                <small>
+                                    {{ data[1][-1][0] }}
+                                </small>
+                                <p class="card-text">
+                                    {% if data[1][1] > 80 %}
+                                        <div class="alert alert-danger" role="alert">
+                                        Avg. {{ data[1][1]|round(2) }}MB
+                                        </div>
+                                    {% elif data[1][1] > 50 %}
+                                        <div class="alert alert-warning" role="alert">
+                                            Avg. {{ data[1][1]|round(2) }}MB
+                                        </div>
+                                    {% elif data[1][1] > 20 %}
+                                        <div class="alert alert-info" role="alert">
+                                            Avg. {{ data[1][1]|round(2) }}MB
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-success" role="alert">
+                                            Avg. {{ data[1][1]|round(2) }}MB
+                                        </div>
+                                    {% endif %}
+                                </p>
+                                <canvas id="graph_{{ data[0]['InstanceName'] }}"></canvas>
+                            {% else %}
+                                <p>No data.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    var ctx = document.getElementById("graph_{{ data[0]['InstanceName'] }}");
+                    var labels = [{% for date in data[1][0] %}
+                            "{{date[0]}}",
+                            {% endfor %}];
+                    var values = [{% for value in data[1][0] %}
+                                {{value[1]}},
+                                {% endfor %}];
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                            {
+                                label: '{{ data[0]['Label'] }}',
+                                data: values,
+                                borderColor: "#3e95cd",
+                            }
+                            ]
+                        }
+                    });
+                </script>
+            </div>
+    </div>
+{% endblock %}
