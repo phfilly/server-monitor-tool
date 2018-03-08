@@ -38,9 +38,8 @@ td {
 }
 
 .refresh {
-    float:right;
     position: relative;
-    top: 10px;
+    top: -2px;
     -webkit-transition-property: -webkit-transform;
     -webkit-transition-duration: 1s;
 }
@@ -67,4 +66,39 @@ td {
     position: absolute;
     bottom: 0;
     width: 100%;
+}
+
+.heartpulse {
+	color: #e00;
+	animation: beat 1s infinite alternate;
+    transform-origin: center;
+    width: 25px !important;
+}
+
+@keyframes beat
+{
+  0%
+  {
+    transform: scale( .75 );
+  }
+  20%
+  {
+    transform: scale( 1 );
+  }
+  40%
+  {
+    transform: scale( .75 );
+  }
+  60%
+  {
+    transform: scale( 1 );
+  }
+  80%
+  {
+    transform: scale( .75 );
+  }
+  100%
+  {
+    transform: scale( .75 );
+  }
 }

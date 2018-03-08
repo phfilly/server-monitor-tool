@@ -2,11 +2,12 @@ import boto3
 import datetime
 import env
 import time
+import socket
 from datetime import timedelta
 from functools import reduce
 
 
-def cpu(name, instanceID, instanceType):
+def cpu(name, instanceID, instanceType, *args):
     cw = boto3.client('cloudwatch',
                       region_name='eu-west-1',
                       aws_access_key_id=env.AWS_ACCESS_KEY_ID,
@@ -23,10 +24,14 @@ def cpu(name, instanceID, instanceType):
     view['InstanceName'] = name
     view['InstanceType'] = instanceType
     data = graphData(view)
+
+    if args:
+        view['Heartbeat'] = check_ping(args)
+
     return [view, data]
 
 
-def memory(name, imageID, instanceType):
+def memory(name, imageID, instanceType, *args):
     cw = boto3.client('cloudwatch',
                       region_name='eu-west-1',
                       aws_access_key_id=env.AWS_ACCESS_KEY_ID,
@@ -43,6 +48,10 @@ def memory(name, imageID, instanceType):
     view['InstanceName'] = name
     view['InstanceType'] = instanceType
     data = graphData(view)
+
+    if args:
+        view['Heartbeat'] = check_ping(args)
+
     return [view, data]
 
 
@@ -88,6 +97,17 @@ def redshift(name, db, instanceType):
     return [view, data]
 
 
+def check_ping(hostname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        s.connect((hostname[0], 2480))
+        s.close()
+        return True
+    except socket.error as e:
+        s.close()
+        return False
+
+
 def graphData(view):
     data = []
     for points in view['Datapoints']:
@@ -101,7 +121,7 @@ def graphData(view):
     return [data, average]
 
 
-def dataPipeline(pipelineID):
+def dataPipeline():
     try:
         cw = boto3.client('datapipeline',
                           region_name='eu-west-1',
@@ -120,14 +140,14 @@ def dataPipeline(pipelineID):
     return response
 
 
-def read_logs():
+def read_logs(server):
     client = boto3.client('logs',
                           region_name='eu-west-1',
                           aws_access_key_id=env.AWS_ACCESS_KEY_ID,
                           aws_secret_access_key=env.AWS_SECRET_ACCESS_KEY)
 
-    group_name = 'docker-container-status'
-    stream = 'Scrapers'
+    group_name = 'dockerscrapers/{}'.format(server)
+    stream = 'json'
     result = {}
     logs_batch = client.get_log_events(logGroupName=group_name, logStreamName=stream)
 
@@ -137,18 +157,18 @@ def read_logs():
         char.append(event['timestamp'])
 
         """ THIS NEEDS TO BE CLEANED UP """
-
-        if char[0] not in result:
-            result.update({char[0]: [{'name': char[0],
-                                      'status': char[1],
-                                      'server': char[2],
-                                      'ram': char[3],
-                                      'time': time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(char[-1]/1000.0))}]})
-        else:
-            result[char[0]][0]['status'] = char[1]
-            result[char[0]][0]['server'] = char[2]
-            result[char[0]][0]['ram'] = char[3]
-            result[char[0]][0]['time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(char[-1]/1000.0))
+        if "service" in char[0]:
+            if char[0] not in result:
+                result.update({char[0]: [{'name': char[0],
+                                        'status': char[1],
+                                        'server': char[2],
+                                        'ram': char[3],
+                                        'time': time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(char[-1]/1000.0))}]})
+            else:
+                result[char[0]][0]['status'] = char[1]
+                result[char[0]][0]['server'] = char[2]
+                result[char[0]][0]['ram'] = char[3]
+                result[char[0]][0]['time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(char[-1]/1000.0))
 
     return result
 

@@ -12,7 +12,14 @@
                     <div class='col-md-6' style='margin:15px 0px'>
                         <div class="card" style='padding: 20px;'>
                             <div class="card-block">
-                                <h4 class="card-title">{{ server['InstanceName'] }}</h4>
+                                <h4 class="card-title">
+                                    {{ server['InstanceName'] }}
+                                    {% if server['Heartbeat'] == True %}
+                                        <img src="{{ url_for('static', filename='css/svg/si-glyph-heart.svg') }}" class='heartpulse nav-icons' title='It is alive!'>
+                                    {% elif server['Heartbeat'] == False %}
+                                        <img src="{{ url_for('static', filename='css/svg/si-glyph-heart-delete.svg') }}" class='nav-icons' title='It died, FFS!'>
+                                    {% endif %}
+                                </h4>
 
                                 {% if graph is defined and graph|length > 0 %}
                                     <h6 class="card-subtitle mb-2 text-muted">

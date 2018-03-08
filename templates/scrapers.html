@@ -2,10 +2,27 @@
 {% block content %}
     <div class='container'>
         <div class='row'>
-            <h2>{{ tablename }}</h2>
-            <a class="nav-link" href="{{ pagename }}">
-                <img src="{{ url_for('static', filename='css/svg/si-glyph-arrow-circle-rycycle.svg') }}" class='refresh nav-icons' title='refresh data'>
-            </a>
+            <div class='col-md-6'>
+                <h2>{{ tablename }} - {{ server }}
+                    <a href="{{ pagename }}">
+                        <img src="{{ url_for('static', filename='css/svg/si-glyph-arrow-circle-rycycle.svg') }}" class='refresh nav-icons' title='refresh data'>
+                    </a>
+                </h2>
+            </div>
+            <div class='col-md-6'>
+                <div style='float:right;'>
+                    <small>Filter By: </small>
+                    <a href='/scrape-server/ThePitt'>
+                        <span class="badge badge-dark">Pitt</span>
+                    </a>
+                    <a href='/scrape-server/TheTower'>
+                        <span class="badge badge-dark">Tower</span>
+                    </a>
+                    <a href='/scrape-server/ThePortal'>
+                        <span class="badge badge-dark">Portal</span>
+                    </a>
+                </div>
+            </div>
         </div>
             <div class='row'>
                     <table class="table table-striped">
